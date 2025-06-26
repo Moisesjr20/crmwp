@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRMWP - WhatsApp CRM</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <!-- Header -->
+    <header class="bg-green-600 text-white shadow-lg">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <i class="fab fa-whatsapp text-3xl"></i>
+                    <h1 class="text-2xl font-bold">CRMWP</h1>
+                </div>
+                <nav class="flex space-x-4">
+                    <a href="/" class="hover:text-green-200 px-3 py-2 rounded bg-green-700">Dashboard</a>
+                    <a href="/messages" class="hover:text-green-200 px-3 py-2 rounded">Mensagens</a>
+                    <a href="/contacts" class="hover:text-green-200 px-3 py-2 rounded">Contatos</a>
+                    <a href="/settings" class="hover:text-green-200 px-3 py-2 rounded">Configurações</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Status Card -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h2 class="text-xl font-semibold mb-4 flex items-center">
+                <i class="fas fa-wifi mr-2 text-green-600"></i>
+                Status da Conexão
+            </h2>
+            <div id="status-info" class="space-y-2">
+                <div class="flex items-center space-x-2">
+                    <span class="font-medium">Status:</span>
+                    <span id="connection-status" class="px-2 py-1 rounded text-sm bg-gray-200">Verificando...</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="font-medium">Instância:</span>
+                    <span id="instance-name" class="text-gray-600">-</span>
+                </div>
+            </div>
+            
+            <!-- QR Code -->
+            <div id="qr-section" class="mt-6 hidden">
+                <h3 class="font-medium mb-3">Escaneie o QR Code com WhatsApp:</h3>
+                <div id="qr-container" class="bg-gray-50 p-4 rounded-lg text-center">
+                    <div id="qr-loading" class="text-gray-500">
+                        <i class="fas fa-spinner fa-spin mr-2"></i>
+                        Gerando QR Code...
+                    </div>
+                    <img id="qr-code" class="mx-auto hidden" style="max-width: 256px;">
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="mt-6 flex space-x-3">
+                <button id="btn-create-instance" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+                    <i class="fas fa-plus mr-2"></i>Criar Instância
+                </button>
+                <button id="btn-get-qr" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                    <i class="fas fa-qrcode mr-2"></i>Obter QR Code
+                </button>
+                <button id="btn-refresh" class="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700">
+                    <i class="fas fa-sync mr-2"></i>Atualizar
+                </button>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="grid md:grid-cols-2 gap-6 mb-8">
+            <!-- Send Message -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-lg font-semibold mb-4 flex items-center">
+                    <i class="fas fa-paper-plane mr-2 text-blue-600"></i>
+                    Enviar Mensagem Rápida
+                </h3>
+                <form id="quick-message-form" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Telefone:</label>
+                        <input type="tel" id="quick-phone" class="w-full p-2 border rounded-lg" 
+                               placeholder="Ex: 5511999999999" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Mensagem:</label>
+                        <textarea id="quick-message" class="w-full p-2 border rounded-lg h-24" 
+                                  placeholder="Digite sua mensagem aqui..." required></textarea>
+                    </div>
+                    <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700">
+                        <i class="fas fa-send mr-2"></i>Enviar
+                    </button>
+                </form>
+            </div>
+
+            <!-- Recent Messages -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-lg font-semibold mb-4 flex items-center">
+                    <i class="fas fa-comments mr-2 text-purple-600"></i>
+                    Mensagens Recentes
+                </h3>
+                <div id="recent-messages" class="space-y-3 max-h-64 overflow-y-auto">
+                    <div class="text-gray-500 text-center py-4">
+                        <i class="fas fa-inbox text-2xl mb-2"></i>
+                        <p>Nenhuma mensagem ainda</p>
+                    </div>
+                </div>
+                <a href="/messages" class="block text-center mt-4 text-blue-600 hover:underline">
+                    Ver todas as mensagens →
+                </a>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                <i class="fas fa-envelope text-3xl text-blue-600 mb-3"></i>
+                <div class="text-2xl font-bold" id="total-messages">0</div>
+                <div class="text-gray-600">Total de Mensagens</div>
+            </div>
+            <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                <i class="fas fa-users text-3xl text-green-600 mb-3"></i>
+                <div class="text-2xl font-bold" id="total-contacts">0</div>
+                <div class="text-gray-600">Contatos</div>
+            </div>
+            <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                <i class="fas fa-clock text-3xl text-purple-600 mb-3"></i>
+                <div class="text-2xl font-bold" id="uptime">--:--</div>
+                <div class="text-gray-600">Tempo Online</div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-6 mt-12">
+        <div class="container mx-auto px-4 text-center">
+            <p>&copy; 2024 CRMWP - Sistema CRM WhatsApp</p>
+            <p class="text-gray-400 text-sm mt-2">Desenvolvido para EasyPanel</p>
+        </div>
+    </footer>
+
+    <script src="/js/app.js"></script>
+</body>
+</html> 
