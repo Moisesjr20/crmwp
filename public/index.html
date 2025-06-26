@@ -5,142 +5,462 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CRMWP - WhatsApp CRM</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'whatsapp': {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            200: '#bbf7d0',
+                            300: '#86efac',
+                            400: '#4ade80',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                            950: '#052e16'
+                        }
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-in-out',
+                        'slide-up': 'slideUp 0.3s ease-out',
+                        'pulse-soft': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' }
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(10px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body class="bg-gray-100 min-h-screen">
+<body class="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
     <!-- Header -->
-    <header class="bg-green-600 text-white shadow-lg">
-        <div class="container mx-auto px-4 py-4">
+    <header class="bg-gradient-to-r from-whatsapp-600 to-whatsapp-700 text-white shadow-xl">
+        <div class="container mx-auto px-4 py-6">
             <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-3">
-                    <i class="fab fa-whatsapp text-3xl"></i>
-                    <h1 class="text-2xl font-bold">CRMWP</h1>
+                <div class="flex items-center space-x-4">
+                    <div class="bg-white bg-opacity-20 p-3 rounded-xl">
+                        <i class="fab fa-whatsapp text-3xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-3xl font-bold">CRMWP</h1>
+                        <p class="text-whatsapp-100 text-sm">WhatsApp CRM Sistema</p>
+                    </div>
                 </div>
-                <nav class="flex space-x-4">
-                    <a href="/" class="hover:text-green-200 px-3 py-2 rounded bg-green-700">Dashboard</a>
-                    <a href="/messages" class="hover:text-green-200 px-3 py-2 rounded">Mensagens</a>
-                    <a href="/contacts" class="hover:text-green-200 px-3 py-2 rounded">Contatos</a>
-                    <a href="/settings" class="hover:text-green-200 px-3 py-2 rounded">Configurações</a>
+                <nav class="hidden md:flex space-x-2">
+                    <a href="/" class="bg-whatsapp-800 hover:bg-whatsapp-900 px-4 py-2 rounded-lg transition-all duration-200 flex items-center space-x-2">
+                        <i class="fas fa-home"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="/messages" class="hover:bg-whatsapp-800 px-4 py-2 rounded-lg transition-all duration-200 flex items-center space-x-2">
+                        <i class="fas fa-comments"></i>
+                        <span>Mensagens</span>
+                    </a>
+                    <a href="/contacts" class="hover:bg-whatsapp-800 px-4 py-2 rounded-lg transition-all duration-200 flex items-center space-x-2">
+                        <i class="fas fa-users"></i>
+                        <span>Contatos</span>
+                    </a>
+                    <a href="/settings" class="hover:bg-whatsapp-800 px-4 py-2 rounded-lg transition-all duration-200 flex items-center space-x-2">
+                        <i class="fas fa-cog"></i>
+                        <span>Config</span>
+                    </a>
                 </nav>
+                <!-- Mobile menu button -->
+                <button class="md:hidden bg-whatsapp-800 p-2 rounded-lg" onclick="toggleMobileMenu()">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+        <!-- Mobile menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-whatsapp-800 px-4 pb-4">
+            <div class="space-y-2">
+                <a href="/" class="block bg-whatsapp-900 px-4 py-2 rounded-lg">Dashboard</a>
+                <a href="/messages" class="block hover:bg-whatsapp-900 px-4 py-2 rounded-lg">Mensagens</a>
+                <a href="/contacts" class="block hover:bg-whatsapp-900 px-4 py-2 rounded-lg">Contatos</a>
+                <a href="/settings" class="block hover:bg-whatsapp-900 px-4 py-2 rounded-lg">Configurações</a>
             </div>
         </div>
     </header>
 
     <!-- Main Content -->
-    <main class="container mx-auto px-4 py-8">
-        <!-- Status Card -->
-        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
-            <h2 class="text-xl font-semibold mb-4 flex items-center">
-                <i class="fas fa-wifi mr-2 text-green-600"></i>
-                Status da Conexão
-            </h2>
-            <div id="status-info" class="space-y-2">
-                <div class="flex items-center space-x-2">
-                    <span class="font-medium">Status:</span>
-                    <span id="connection-status" class="px-2 py-1 rounded text-sm bg-gray-200">Verificando...</span>
+    <main class="container mx-auto px-4 py-8 animate-fade-in">
+        <!-- Alert Banner -->
+        <div id="alert-banner" class="hidden mb-6 p-4 rounded-xl border-l-4 animate-slide-up">
+            <div class="flex items-center">
+                <i id="alert-icon" class="text-2xl mr-3"></i>
+                <div>
+                    <h4 id="alert-title" class="font-semibold"></h4>
+                    <p id="alert-message" class="text-sm"></p>
                 </div>
-                <div class="flex items-center space-x-2">
-                    <span class="font-medium">Instância:</span>
-                    <span id="instance-name" class="text-gray-600">-</span>
+                <button onclick="closeAlert()" class="ml-auto">
+                    <i class="fas fa-times text-gray-500 hover:text-gray-700"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Status Card -->
+        <div class="bg-white rounded-2xl shadow-xl p-8 mb-8 border border-gray-200">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold text-gray-800 flex items-center">
+                    <div class="bg-gradient-to-r from-whatsapp-500 to-whatsapp-600 p-3 rounded-xl mr-4">
+                        <i class="fas fa-wifi text-white"></i>
+                    </div>
+                    Status da Conexão
+                </h2>
+                <div id="status-indicator" class="flex items-center space-x-2">
+                    <div class="w-3 h-3 bg-gray-400 rounded-full animate-pulse-soft"></div>
+                    <span class="text-sm text-gray-500">Verificando...</span>
                 </div>
             </div>
             
-            <!-- QR Code -->
-            <div id="qr-section" class="mt-6 hidden">
-                <h3 class="font-medium mb-3">Escaneie o QR Code com WhatsApp:</h3>
-                <div id="qr-container" class="bg-gray-50 p-4 rounded-lg text-center">
-                    <div id="qr-loading" class="text-gray-500">
-                        <i class="fas fa-spinner fa-spin mr-2"></i>
-                        Gerando QR Code...
+            <div id="status-info" class="grid md:grid-cols-2 gap-6 mb-6">
+                <div class="bg-gray-50 p-4 rounded-xl">
+                    <div class="flex items-center space-x-3">
+                        <i class="fas fa-circle-info text-blue-600"></i>
+                        <div>
+                            <span class="text-sm text-gray-600">Status:</span>
+                            <div id="connection-status" class="font-semibold text-lg">Verificando...</div>
+                        </div>
                     </div>
-                    <img id="qr-code" class="mx-auto hidden" style="max-width: 256px;">
+                </div>
+                <div class="bg-gray-50 p-4 rounded-xl">
+                    <div class="flex items-center space-x-3">
+                        <i class="fas fa-server text-purple-600"></i>
+                        <div>
+                            <span class="text-sm text-gray-600">Instância:</span>
+                            <div id="instance-name" class="font-semibold text-lg">-</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- QR Code Section -->
+            <div id="qr-section" class="hidden animate-slide-up">
+                <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-2xl border border-blue-200">
+                    <h3 class="font-bold text-lg mb-4 flex items-center text-blue-800">
+                        <i class="fas fa-qrcode mr-3"></i>
+                        Escaneie o QR Code com WhatsApp
+                    </h3>
+                    <div id="qr-container" class="bg-white p-6 rounded-xl text-center shadow-lg">
+                        <div id="qr-loading" class="text-gray-500 py-8">
+                            <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4"></div>
+                            <p class="font-medium">Gerando QR Code...</p>
+                            <p class="text-sm text-gray-400">Aguarde alguns segundos</p>
+                        </div>
+                        <img id="qr-code" class="mx-auto hidden shadow-lg rounded-lg" style="max-width: 280px;">
+                        <div id="qr-instructions" class="hidden mt-4 text-sm text-gray-600">
+                            <p>1. Abra o WhatsApp no seu celular</p>
+                            <p>2. Toque em <strong>Mais opções</strong> > <strong>Aparelhos conectados</strong></p>
+                            <p>3. Toque em <strong>Conectar um aparelho</strong></p>
+                            <p>4. Aponte seu celular para esta tela para capturar o código</p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <!-- Action Buttons -->
-            <div class="mt-6 flex space-x-3">
-                <button id="btn-create-instance" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
-                    <i class="fas fa-plus mr-2"></i>Criar Instância
+            <div class="flex flex-wrap gap-3 mt-6">
+                <button id="btn-create-instance" class="bg-gradient-to-r from-whatsapp-600 to-whatsapp-700 hover:from-whatsapp-700 hover:to-whatsapp-800 text-white px-6 py-3 rounded-xl transition-all duration-200 flex items-center space-x-2 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                    <i class="fas fa-plus"></i>
+                    <span>Criar Instância</span>
                 </button>
-                <button id="btn-get-qr" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-                    <i class="fas fa-qrcode mr-2"></i>Obter QR Code
+                <button id="btn-get-qr" class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-3 rounded-xl transition-all duration-200 flex items-center space-x-2 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                    <i class="fas fa-qrcode"></i>
+                    <span>Obter QR Code</span>
                 </button>
-                <button id="btn-refresh" class="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700">
-                    <i class="fas fa-sync mr-2"></i>Atualizar
+                <button id="btn-refresh" class="bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white px-6 py-3 rounded-xl transition-all duration-200 flex items-center space-x-2 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                    <i class="fas fa-sync"></i>
+                    <span>Atualizar</span>
                 </button>
             </div>
         </div>
 
         <!-- Quick Actions -->
-        <div class="grid md:grid-cols-2 gap-6 mb-8">
+        <div class="grid lg:grid-cols-2 gap-8 mb-8">
             <!-- Send Message -->
-            <div class="bg-white rounded-lg shadow-md p-6">
-                <h3 class="text-lg font-semibold mb-4 flex items-center">
-                    <i class="fas fa-paper-plane mr-2 text-blue-600"></i>
-                    Enviar Mensagem Rápida
-                </h3>
-                <form id="quick-message-form" class="space-y-4">
+            <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-200">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-xl font-bold text-gray-800 flex items-center">
+                        <div class="bg-gradient-to-r from-blue-500 to-blue-600 p-3 rounded-xl mr-4">
+                            <i class="fas fa-paper-plane text-white"></i>
+                        </div>
+                        Enviar Mensagem Rápida
+                    </h3>
+                    <div class="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+                        <i class="fas fa-bolt mr-1"></i>Rápido
+                    </div>
+                </div>
+                <form id="quick-message-form" class="space-y-6">
                     <div>
-                        <label class="block text-sm font-medium mb-1">Telefone:</label>
-                        <input type="tel" id="quick-phone" class="w-full p-2 border rounded-lg" 
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-phone mr-2 text-gray-500"></i>Telefone:
+                        </label>
+                        <input type="tel" id="quick-phone" 
+                               class="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none transition-colors duration-200" 
                                placeholder="Ex: 5511999999999" required>
+                        <p class="text-xs text-gray-500 mt-1">Formato: código do país + DDD + número</p>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium mb-1">Mensagem:</label>
-                        <textarea id="quick-message" class="w-full p-2 border rounded-lg h-24" 
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-comment mr-2 text-gray-500"></i>Mensagem:
+                        </label>
+                        <textarea id="quick-message" 
+                                  class="w-full p-4 border-2 border-gray-200 rounded-xl h-32 focus:border-blue-500 focus:outline-none transition-colors duration-200 resize-none" 
                                   placeholder="Digite sua mensagem aqui..." required></textarea>
+                        <div class="flex justify-between items-center mt-2">
+                            <p class="text-xs text-gray-500">Máximo 4096 caracteres</p>
+                            <span id="char-count" class="text-xs text-gray-400">0/4096</span>
+                        </div>
                     </div>
-                    <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700">
-                        <i class="fas fa-send mr-2"></i>Enviar
+                    <button type="submit" 
+                            class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white py-4 rounded-xl transition-all duration-200 flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 font-semibold">
+                        <i class="fas fa-send"></i>
+                        <span>Enviar Mensagem</span>
                     </button>
                 </form>
             </div>
 
             <!-- Recent Messages -->
-            <div class="bg-white rounded-lg shadow-md p-6">
-                <h3 class="text-lg font-semibold mb-4 flex items-center">
-                    <i class="fas fa-comments mr-2 text-purple-600"></i>
-                    Mensagens Recentes
-                </h3>
-                <div id="recent-messages" class="space-y-3 max-h-64 overflow-y-auto">
-                    <div class="text-gray-500 text-center py-4">
-                        <i class="fas fa-inbox text-2xl mb-2"></i>
-                        <p>Nenhuma mensagem ainda</p>
+            <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-200">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-xl font-bold text-gray-800 flex items-center">
+                        <div class="bg-gradient-to-r from-purple-500 to-purple-600 p-3 rounded-xl mr-4">
+                            <i class="fas fa-comments text-white"></i>
+                        </div>
+                        Mensagens Recentes
+                    </h3>
+                    <button onclick="refreshMessages()" class="text-gray-500 hover:text-gray-700 p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200">
+                        <i class="fas fa-sync"></i>
+                    </button>
+                </div>
+                <div id="recent-messages" class="space-y-4 max-h-80 overflow-y-auto custom-scrollbar">
+                    <div class="text-gray-500 text-center py-8">
+                        <div class="bg-gray-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-inbox text-2xl text-gray-400"></i>
+                        </div>
+                        <p class="font-medium">Nenhuma mensagem ainda</p>
+                        <p class="text-sm text-gray-400">Suas mensagens aparecerão aqui</p>
                     </div>
                 </div>
-                <a href="/messages" class="block text-center mt-4 text-blue-600 hover:underline">
-                    Ver todas as mensagens →
-                </a>
+                <div class="mt-6 pt-4 border-t border-gray-200">
+                    <a href="/messages" class="block text-center text-purple-600 hover:text-purple-700 font-medium transition-colors duration-200 flex items-center justify-center space-x-2">
+                        <span>Ver todas as mensagens</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
             </div>
         </div>
 
         <!-- Stats -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="bg-white rounded-lg shadow-md p-6 text-center">
-                <i class="fas fa-envelope text-3xl text-blue-600 mb-3"></i>
-                <div class="text-2xl font-bold" id="total-messages">0</div>
-                <div class="text-gray-600">Total de Mensagens</div>
+            <div class="bg-white rounded-2xl shadow-xl p-8 text-center border border-gray-200 hover:shadow-2xl transition-shadow duration-300">
+                <div class="bg-gradient-to-r from-blue-500 to-blue-600 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-envelope text-2xl text-white"></i>
+                </div>
+                <div class="text-3xl font-bold text-gray-800 mb-1" id="total-messages">0</div>
+                <div class="text-gray-600 font-medium">Total de Mensagens</div>
+                <div class="text-xs text-gray-400 mt-2">
+                    <i class="fas fa-arrow-up text-green-500 mr-1"></i>
+                    <span id="messages-trend">Carregando...</span>
+                </div>
             </div>
-            <div class="bg-white rounded-lg shadow-md p-6 text-center">
-                <i class="fas fa-users text-3xl text-green-600 mb-3"></i>
-                <div class="text-2xl font-bold" id="total-contacts">0</div>
-                <div class="text-gray-600">Contatos</div>
+            <div class="bg-white rounded-2xl shadow-xl p-8 text-center border border-gray-200 hover:shadow-2xl transition-shadow duration-300">
+                <div class="bg-gradient-to-r from-whatsapp-500 to-whatsapp-600 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-users text-2xl text-white"></i>
+                </div>
+                <div class="text-3xl font-bold text-gray-800 mb-1" id="total-contacts">0</div>
+                <div class="text-gray-600 font-medium">Contatos</div>
+                <div class="text-xs text-gray-400 mt-2">
+                    <i class="fas fa-user-plus text-blue-500 mr-1"></i>
+                    <span id="contacts-trend">Carregando...</span>
+                </div>
             </div>
-            <div class="bg-white rounded-lg shadow-md p-6 text-center">
-                <i class="fas fa-clock text-3xl text-purple-600 mb-3"></i>
-                <div class="text-2xl font-bold" id="uptime">--:--</div>
-                <div class="text-gray-600">Tempo Online</div>
+            <div class="bg-white rounded-2xl shadow-xl p-8 text-center border border-gray-200 hover:shadow-2xl transition-shadow duration-300">
+                <div class="bg-gradient-to-r from-purple-500 to-purple-600 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-clock text-2xl text-white"></i>
+                </div>
+                <div class="text-3xl font-bold text-gray-800 mb-1" id="uptime">--:--</div>
+                <div class="text-gray-600 font-medium">Tempo Online</div>
+                <div class="text-xs text-gray-400 mt-2">
+                    <i class="fas fa-circle text-green-500 mr-1"></i>
+                    <span>Sistema Ativo</span>
+                </div>
             </div>
         </div>
     </main>
 
     <!-- Footer -->
-    <footer class="bg-gray-800 text-white py-6 mt-12">
-        <div class="container mx-auto px-4 text-center">
-            <p>&copy; 2024 CRMWP - Sistema CRM WhatsApp</p>
-            <p class="text-gray-400 text-sm mt-2">Desenvolvido para EasyPanel</p>
+    <footer class="bg-gradient-to-r from-gray-800 to-gray-900 text-white py-12 mt-16">
+        <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-3 gap-8">
+                <div>
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="bg-whatsapp-600 p-2 rounded-lg">
+                            <i class="fab fa-whatsapp text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold">CRMWP</h3>
+                    </div>
+                    <p class="text-gray-300 text-sm">
+                        Sistema CRM WhatsApp simples e eficiente, 
+                        desenvolvido para facilitar a gestão de mensagens e contatos.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Links Úteis</h4>
+                    <div class="space-y-2 text-sm">
+                        <a href="/api/messages" class="block text-gray-300 hover:text-white transition-colors duration-200">
+                            <i class="fas fa-api mr-2"></i>API Mensagens
+                        </a>
+                        <a href="/api/contacts" class="block text-gray-300 hover:text-white transition-colors duration-200">
+                            <i class="fas fa-address-book mr-2"></i>API Contatos
+                        </a>
+                        <a href="/health" class="block text-gray-300 hover:text-white transition-colors duration-200">
+                            <i class="fas fa-heartbeat mr-2"></i>Health Check
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Sistema</h4>
+                    <div class="space-y-2 text-sm text-gray-300">
+                        <div class="flex items-center">
+                            <i class="fas fa-server mr-2 text-blue-400"></i>
+                            <span>Porta: <span id="footer-port">3000</span></span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-database mr-2 text-green-400"></i>
+                            <span>SQLite Database</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-cloud mr-2 text-purple-400"></i>
+                            <span>EasyPanel Ready</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center">
+                <p class="text-gray-400">&copy; 2024 CRMWP - Sistema CRM WhatsApp</p>
+                <p class="text-gray-500 text-sm mt-2">
+                    Desenvolvido com ❤️ para simplificar sua comunicação WhatsApp
+                </p>
+            </div>
         </div>
     </footer>
+
+    <!-- Custom CSS -->
+    <style>
+        .custom-scrollbar {
+            scrollbar-width: thin;
+            scrollbar-color: #cbd5e0 #f7fafc;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f7fafc;
+            border-radius: 3px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e0;
+            border-radius: 3px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #a0aec0;
+        }
+    </style>
+
+    <!-- JavaScript Functions -->
+    <script>
+        // Mobile menu toggle
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        // Close alert banner
+        function closeAlert() {
+            const banner = document.getElementById('alert-banner');
+            banner.classList.add('hidden');
+        }
+
+                 // Show alert - disponibilizar globalmente
+         window.showAlert = function showAlert(type, title, message) {
+            const banner = document.getElementById('alert-banner');
+            const icon = document.getElementById('alert-icon');
+            const titleEl = document.getElementById('alert-title');
+            const messageEl = document.getElementById('alert-message');
+
+            // Reset classes
+            banner.className = 'mb-6 p-4 rounded-xl border-l-4 animate-slide-up';
+            
+            switch(type) {
+                case 'success':
+                    banner.classList.add('bg-green-50', 'border-green-500', 'text-green-700');
+                    icon.className = 'fas fa-check-circle text-2xl mr-3 text-green-500';
+                    break;
+                case 'error':
+                    banner.classList.add('bg-red-50', 'border-red-500', 'text-red-700');
+                    icon.className = 'fas fa-exclamation-circle text-2xl mr-3 text-red-500';
+                    break;
+                case 'warning':
+                    banner.classList.add('bg-yellow-50', 'border-yellow-500', 'text-yellow-700');
+                    icon.className = 'fas fa-exclamation-triangle text-2xl mr-3 text-yellow-500';
+                    break;
+                case 'info':
+                    banner.classList.add('bg-blue-50', 'border-blue-500', 'text-blue-700');
+                    icon.className = 'fas fa-info-circle text-2xl mr-3 text-blue-500';
+                    break;
+            }
+
+            titleEl.textContent = title;
+            messageEl.textContent = message;
+            banner.classList.remove('hidden');
+
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                banner.classList.add('hidden');
+            }, 5000);
+        }
+
+        // Refresh messages function
+        function refreshMessages() {
+            if (window.crmwpApp) {
+                window.crmwpApp.loadStats();
+            }
+        }
+
+        // Character counter for message textarea
+        document.addEventListener('DOMContentLoaded', () => {
+            const messageTextarea = document.getElementById('quick-message');
+            const charCount = document.getElementById('char-count');
+
+            if (messageTextarea && charCount) {
+                messageTextarea.addEventListener('input', () => {
+                    const length = messageTextarea.value.length;
+                    charCount.textContent = `${length}/4096`;
+                    
+                    if (length > 4000) {
+                        charCount.classList.add('text-red-500');
+                        charCount.classList.remove('text-gray-400');
+                    } else {
+                        charCount.classList.remove('text-red-500');
+                        charCount.classList.add('text-gray-400');
+                    }
+                });
+            }
+        });
+    </script>
 
     <script src="/js/app.js"></script>
 </body>

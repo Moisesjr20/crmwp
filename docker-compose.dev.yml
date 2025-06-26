@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  crmwp-dev:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - EVOLUTION_API_URL=${EVOLUTION_API_URL:-https://sua-evolution-api.com}
+      - EVOLUTION_API_KEY=${EVOLUTION_API_KEY:-sua-chave-aqui}
+      - INSTANCE_NAME=${INSTANCE_NAME:-CRMWP-DEV}
+      - WEBHOOK_URL=${WEBHOOK_URL:-http://localhost:3000/webhook}
+      - DATABASE_PATH=/app/data/crmwp-dev.db
+    volumes:
+      - ./data:/app/data
+      - ./src:/app/src
+      - ./public:/app/public
+    restart: unless-stopped
+    command: npm run dev
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # Opcional: Interface de administração do SQLite
+  sqlite-admin:
+    image: coleifer/sqlite-web
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data:/data
+    command: sqlite_web -H 0.0.0.0 -p 8080 /data/crmwp-dev.db
+    depends_on:
+      - crmwp-dev 

@@ -8,10 +8,22 @@ export class WhatsAppService {
   constructor() {
     this.instanceName = process.env.INSTANCE_NAME || 'CRMWP';
     
+    // Verificar se as variáveis estão configuradas
+    const apiUrl = process.env.EVOLUTION_API_URL;
+    const apiKey = process.env.EVOLUTION_API_KEY;
+    
+    if (!apiUrl || apiUrl === 'https://sua-evolution-api.com') {
+      console.warn('⚠️  Evolution API URL não configurada. Configure EVOLUTION_API_URL no .env');
+    }
+    
+    if (!apiKey || apiKey === 'sua-chave-aqui') {
+      console.warn('⚠️  Evolution API Key não configurada. Configure EVOLUTION_API_KEY no .env');
+    }
+    
     this.api = axios.create({
-      baseURL: process.env.EVOLUTION_API_URL,
+      baseURL: apiUrl,
       headers: {
-        'apikey': process.env.EVOLUTION_API_KEY,
+        'apikey': apiKey,
         'Content-Type': 'application/json'
       }
     });
@@ -67,6 +79,15 @@ export class WhatsAppService {
   // Verificar status da instância
   async getInstanceStatus(): Promise<any> {
     try {
+      // Verificar se API está configurada
+      if (!process.env.EVOLUTION_API_URL || process.env.EVOLUTION_API_URL === 'https://sua-evolution-api.com') {
+        return { 
+          status: 'disconnected', 
+          error: 'Evolution API não configurada',
+          instance: { instanceName: this.instanceName }
+        };
+      }
+
       const response = await this.api.get(`/instance/connectionState/${this.instanceName}`);
       const status = response.data.instance?.state || 'disconnected';
       
@@ -77,7 +98,13 @@ export class WhatsAppService {
       };
     } catch (error: any) {
       console.error('Erro ao verificar status:', error.response?.data || error.message);
-      return { status: 'error', error: error.message };
+      
+      // Retornar status padrão se API não estiver configurada
+      return { 
+        status: 'disconnected', 
+        error: 'Erro de conexão com Evolution API',
+        instance: { instanceName: this.instanceName }
+      };
     }
   }
 
