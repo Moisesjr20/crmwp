@@ -4,6 +4,52 @@ import { whatsappService } from '../services/whatsapp';
 
 const router = express.Router();
 
+// GET /api/instance/test - Testar conexão com Evolution API
+router.get('/instance/test', async (req, res) => {
+  try {
+    const apiUrl = process.env.EVOLUTION_API_URL;
+    const apiKey = process.env.EVOLUTION_API_KEY;
+    
+    if (!apiUrl || !apiKey) {
+      return res.json({
+        success: false,
+        message: 'Evolution API não configurada',
+        configured: false,
+        missing: {
+          url: !apiUrl,
+          key: !apiKey
+        }
+      });
+    }
+    
+    // Testar conexão
+    const axios = require('axios');
+    const response = await axios.get(apiUrl, {
+      headers: { 'apikey': apiKey },
+      timeout: 10000
+    });
+    
+    res.json({
+      success: true,
+      message: 'Conexão com Evolution API estabelecida',
+      configured: true,
+      data: {
+        version: response.data.version,
+        clientName: response.data.clientName,
+        manager: response.data.manager,
+        api: apiUrl
+      }
+    });
+  } catch (error: any) {
+    res.json({
+      success: false,
+      message: 'Erro ao conectar com Evolution API: ' + (error.response?.data?.message || error.message),
+      configured: true,
+      error: error.response?.status || 'CONNECTION_ERROR'
+    });
+  }
+});
+
 // GET /api/messages - Listar mensagens
 router.get('/messages', async (req, res) => {
   try {

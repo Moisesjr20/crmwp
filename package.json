@@ -14,28 +14,34 @@
     "db:view": "echo 'Use: sqlite3 ./data/crmwp-dev.db' ou instale DB Browser",
     "setup": "node scripts/dev-server.js"
   },
-  "keywords": ["crm", "whatsapp", "evolution-api", "easypanel"],
+  "keywords": [
+    "crm",
+    "whatsapp",
+    "evolution-api",
+    "easypanel"
+  ],
   "author": "CRMWP Team",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.18.2",
-    "sqlite3": "^5.1.6",
     "axios": "^1.6.2",
     "cors": "^2.8.5",
+    "dotenv": "^16.6.0",
+    "express": "^4.18.2",
     "helmet": "^7.1.0",
     "morgan": "^1.10.0",
-    "uuid": "^9.0.1",
-    "multer": "^1.4.5-lts.1"
+    "multer": "^1.4.5-lts.1",
+    "sqlite3": "^5.1.6",
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
-    "@types/express": "^4.17.21",
     "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
     "@types/morgan": "^1.9.9",
-    "@types/uuid": "^9.0.7",
     "@types/multer": "^1.4.11",
     "@types/node": "^20.10.0",
-    "typescript": "^5.3.2",
+    "@types/uuid": "^9.0.7",
+    "concurrently": "^8.2.2",
     "ts-node-dev": "^2.0.0",
-    "concurrently": "^8.2.2"
+    "typescript": "^5.3.2"
   }
-} 
+}

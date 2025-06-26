@@ -110,7 +110,8 @@ class CRMWP {
         if (data.qrCode && (data.status === 'qr_ready' || data.status === 'connecting')) {
             qrSection?.classList.remove('hidden');
             if (qrCode) {
-                qrCode.src = `data:image/png;base64,${data.qrCode}`;
+                // QR code já vem com o prefixo data:image/png;base64,
+                qrCode.src = data.qrCode;
                 qrCode.classList.remove('hidden');
                 qrInstructions?.classList.remove('hidden');
                 document.getElementById('qr-loading')?.classList.add('hidden');

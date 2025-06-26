@@ -12,12 +12,16 @@ export class WhatsAppService {
     const apiUrl = process.env.EVOLUTION_API_URL;
     const apiKey = process.env.EVOLUTION_API_KEY;
     
-    if (!apiUrl || apiUrl === 'https://sua-evolution-api.com') {
+    if (!apiUrl) {
       console.warn('⚠️  Evolution API URL não configurada. Configure EVOLUTION_API_URL no .env');
+    } else {
+      console.log('✅ Evolution API configurada:', apiUrl);
     }
     
-    if (!apiKey || apiKey === 'sua-chave-aqui') {
+    if (!apiKey) {
       console.warn('⚠️  Evolution API Key não configurada. Configure EVOLUTION_API_KEY no .env');
+    } else {
+      console.log('🔑 API Key configurada:', apiKey.substring(0, 8) + '...');
     }
     
     this.api = axios.create({
@@ -34,9 +38,12 @@ export class WhatsAppService {
     try {
       const webhookUrl = process.env.WEBHOOK_URL || 'http://localhost:3000/webhook';
       
-      const response = await this.api.post('/instance/create', {
+      const payload = {
         instanceName: this.instanceName,
-        webhook: webhookUrl,
+        token: this.instanceName + '_token',
+        qrcode: true,
+        integration: "WHATSAPP-BAILEYS",
+        webhookUrl: webhookUrl,
         webhookByEvents: false,
         webhookBase64: false,
         events: [
@@ -48,13 +55,18 @@ export class WhatsAppService {
           "CONTACTS_SET",
           "CONTACTS_UPSERT"
         ]
-      });
+      };
 
+      console.log('📱 Criando instância com payload:', JSON.stringify(payload, null, 2));
+      
+      const response = await this.api.post('/instance/create', payload);
+
+      console.log('✅ Instância criada:', response.data);
       await database.setSetting('instance_status', 'created');
       return response.data;
     } catch (error: any) {
-      console.error('Erro ao criar instância:', error.response?.data || error.message);
-      throw error;
+      console.error('❌ Erro ao criar instância:', error.response?.data || error.message);
+      throw new Error(error.response?.data?.message || error.message || 'Erro desconhecido');
     }
   }
 
@@ -80,7 +92,7 @@ export class WhatsAppService {
   async getInstanceStatus(): Promise<any> {
     try {
       // Verificar se API está configurada
-      if (!process.env.EVOLUTION_API_URL || process.env.EVOLUTION_API_URL === 'https://sua-evolution-api.com') {
+      if (!process.env.EVOLUTION_API_URL || !process.env.EVOLUTION_API_KEY) {
         return { 
           status: 'disconnected', 
           error: 'Evolution API não configurada',
